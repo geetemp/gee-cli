@@ -1,0 +1,8 @@
+{
+  "name": "gee-cli",
+  "version": "1.0.0",
+  "description": "geetemp group project scaffold",
+  "main": "index.js",
+  "author": "common",
+  "license": "MIT"
+}
