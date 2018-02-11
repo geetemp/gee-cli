@@ -4,5 +4,8 @@
   "description": "geetemp group project scaffold",
   "main": "index.js",
   "author": "common",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.14.1"
+  }
 }
