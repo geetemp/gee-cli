@@ -2,7 +2,18 @@
 
 const program = require("commander");
 const chalk = require("chalk");
+const exists = require("fs").existsSync;
+const path = require("path");
 const home = require("user-home"); //获取系统用户目录路径
+const tildify = require("tildify"); //转换绝对地址到波浪路径
+const inquirer = require("inquirer"); //提问
+const logger = require("../lib/logger"); //日志
+const localPath = require("../lib/local-path");
+const rm = require("rimraf").sync; //删除
+const download = require("download-git-repo");
+// const generate = require("../lib/generate");
+
+const { isLocalPath, getTemplatePath } = localPath;
 
 program
   .usage("<template-name> [project-name]")
@@ -33,7 +44,88 @@ function help() {
 }
 help();
 
+process.on("exit", () => {
+  console.log();
+});
+
+/**
+ * 计算项目名称、项目目的地、模板地址
+ */
 let template = program.args[0];
+const hasSlash = template.indexOf("/") > -1;
 
 const projectName = program.args[1];
-const inPlace = !projectName || projectName === ".";  //是否当前目录
+const inPlace = !projectName || projectName === "."; //是否当前目录
+const name = inPlace ? path.relative("../", process.cwd()) : projectName; //如果为当前目录，取目录名作为项目名
+const to = path.resolve(projectName || ".");
+const clone = program.clone || false;
+
+//如果启动缓存，使用缓存模板(离线下，使用缓存模板)
+const tmp = path.join(home, ".vue-templates", template.replace(/[\/:]/g, "-"));
+if (program.offline) {
+  console.log(`> Use cached template at ${chalk.yellow(tildify(tmp))}`);
+  template = tmp;
+}
+
+if (inPlace || exists(to)) {
+  inquirer
+    .prompt([
+      {
+        type: "confirm",
+        message: inPlace
+          ? "Generate project in current directory?"
+          : "Target directory exists. Continue?",
+        name: "ok"
+      }
+    ])
+    .then(answers => {
+      if (answers.ok) {
+        run();
+      }
+    })
+    .catch(logger.fatal);
+} else {
+  run();
+}
+
+/**
+ * 检查，下载，生成项目
+ */
+function run() {
+  //检查是否是本地模板
+  if (isLocalPath(template)) {
+    const templatePath = getTemplatePath(template);
+    if (exists(templatePath)) {
+      // generate(name, templatePath, to)
+    } else {
+      logger.fatal('Local template "%s" not found.', template);
+    }
+  } else {
+    //仓库模板
+    if (!hasSlash) {
+      //使用官方模板
+      const officialTemplate = "gee-templates/" + template;
+      downloadAndGenerate(officialTemplate);
+    } else {
+      downloadAndGenerate(officialTemplate);
+    }
+  }
+}
+
+/**
+ * 从模板库下载模板并生成项目
+ * @param {String} template
+ */
+function downloadAndGenerate(template) {
+  const spinner = ora("downloading template");
+  spinner.start();
+  if (exists(tmp)) rm(tmp);
+  download(template, tmp, { clone }, err => {
+    spinner.stop();
+    if (err)
+      logger.fatal(
+        "Failed to download repo " + template + ": " + err.message.trim()
+      );
+    generate();
+  });
+}
