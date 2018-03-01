@@ -11,7 +11,7 @@ const logger = require("../lib/logger"); //日志
 const localPath = require("../lib/local-path");
 const rm = require("rimraf").sync; //删除
 const download = require("download-git-repo");
-// const generate = require("../lib/generate");
+const generate = require("../lib/generate");
 
 const { isLocalPath, getTemplatePath } = localPath;
 
@@ -96,7 +96,11 @@ function run() {
   if (isLocalPath(template)) {
     const templatePath = getTemplatePath(template);
     if (exists(templatePath)) {
-      // generate(name, templatePath, to)
+      generate(name, templatePath, to, err => {
+        if (err) logger.fatal(err);
+        console.log();
+        logger.success('Generated "%s".', name);
+      });
     } else {
       logger.fatal('Local template "%s" not found.', template);
     }
@@ -126,6 +130,10 @@ function downloadAndGenerate(template) {
       logger.fatal(
         "Failed to download repo " + template + ": " + err.message.trim()
       );
-    generate();
+    generate(name, tmp, to, err => {
+      if (err) logger.fatal(err);
+      console.log();
+      logger.success('Generated "%s".', name);
+    });
   });
 }
