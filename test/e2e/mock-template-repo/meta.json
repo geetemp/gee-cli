@@ -1,0 +1,43 @@
+{
+  "prompts": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "message": "Project name"
+    },
+    "description": {
+      "type": "string",
+      "required": true,
+      "message": "Project description",
+      "default": "A Vue.js project"
+    },
+    "author": {
+      "type": "string",
+      "message": "Author"
+    },
+    "private": {
+      "type": "boolean",
+      "default": true
+    },
+    "preprocessor": {
+      "message": "CSS Preprocessor",
+      "type": "checkbox",
+      "choices": [
+        "less",
+        "sass"
+      ]
+    },
+    "pick": {
+      "type": "list",
+      "choices": [
+        "yes",
+        "no"
+      ]
+    }
+  },
+  "filters": {
+    "src/*.js": "pick === 'yes'",
+    "**/*.vue": "pick === 'no'"
+  },
+  "skipInterpolation": "src/*-{one,two}.vue"
+}

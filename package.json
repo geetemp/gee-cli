@@ -10,10 +10,13 @@
     "gee-init": "bin/gee-init",
     "gee-list": "bin/gee-list"
   },
+  "scripts": {
+    "e2e": "rimraf test/e2e/mock-template-build && mocha test/e2e/test.js --slow 1000"
+  },
   "dependencies": {
+    "async": "^2.6.0",
     "chalk": "^2.3.1",
     "commander": "^2.14.1",
-    "async": "^2.6.0",
     "consolidate": "^0.15.0",
     "download-git-repo": "^1.0.2",
     "handlebars": "^4.0.11",
@@ -27,5 +30,9 @@
     "tildify": "^1.2.0",
     "user-home": "^2.0.0",
     "validate-npm-package-name": "^3.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.0.1"
   }
 }
