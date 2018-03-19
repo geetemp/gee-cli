@@ -4,6 +4,7 @@ const program = require("commander");
 const chalk = require("chalk");
 const exists = require("fs").existsSync;
 const path = require("path");
+const ora = require("ora");
 const home = require("user-home"); //获取系统用户目录路径
 const tildify = require("tildify"); //转换绝对地址到波浪路径
 const inquirer = require("inquirer"); //提问
@@ -58,7 +59,7 @@ const projectName = program.args[1];
 const inPlace = !projectName || projectName === "."; //是否当前目录
 const name = inPlace ? path.relative("../", process.cwd()) : projectName; //如果为当前目录，取目录名作为项目名
 const to = path.resolve(projectName || ".");
-const clone = program.clone || false;
+const clone = program.clone || true;
 
 //如果启动缓存，使用缓存模板(离线下，使用缓存模板)
 const tmp = path.join(home, ".vue-templates", template.replace(/[\/:]/g, "-"));
@@ -108,7 +109,7 @@ function run() {
     //仓库模板
     if (!hasSlash) {
       //使用官方模板
-      const officialTemplate = "gee-templates/" + template;
+      const officialTemplate = "gitlab:git.i.com:gee-templates/" + template;
       downloadAndGenerate(officialTemplate);
     } else {
       downloadAndGenerate(officialTemplate);
