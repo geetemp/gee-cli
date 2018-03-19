@@ -1,6 +1,6 @@
 {
   "name": "gee-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "geetemp group project scaffold",
   "author": "common",
   "license": "MIT",
@@ -10,8 +10,7 @@
     "gee-list": "bin/gee-list"
   },
   "scripts": {
-    "e2e":
-      "rimraf test/e2e/mock-template-build && mocha test/e2e/test.js --slow 1000"
+    "e2e": "rimraf test/e2e/mock-template-build && mocha test/e2e/test.js --slow 1000"
   },
   "dependencies": {
     "async": "^2.6.0",
